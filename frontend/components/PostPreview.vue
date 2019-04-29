@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <article class="post-preview">
     <h2 class="title is-2">{{ title }}</h2>
     <p>{{ date }}</p>
     <br />
@@ -8,7 +8,7 @@
     <div class="post-body">
       {{ body }}
     </div>
-  </div>
+  </article>
 </template>
 
 <script>
@@ -34,4 +34,8 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped>
+.post-preview {
+  margin-bottom: 30px;
+}
+</style>

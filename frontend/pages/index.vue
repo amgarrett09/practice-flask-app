@@ -1,18 +1,25 @@
 <template>
-  <main>
-    <section class="section">
-      <div class="container is-fluid">
-        <post-preview
-          v-for="post in posts"
-          :key="post.title"
-          :title="post.title"
-          :author="post.author"
-          :date="post.date"
-          :body="post.body"
-        />
-      </div>
-    </section>
-  </main>
+  <div>
+    <header>
+      <nav>
+        <nuxt-link to="/create-post">Create a post</nuxt-link>
+      </nav>
+    </header>
+    <main>
+      <section class="section">
+        <div class="container is-fluid">
+          <post-preview
+            v-for="post in posts"
+            :key="post.title"
+            :title="post.title"
+            :author="post.author"
+            :date="post.date"
+            :body="post.body"
+          />
+        </div>
+      </section>
+    </main>
+  </div>
 </template>
 
 <script>
