@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from flask_admin import Admin
 import peewee
 from flask_admin.contrib.peewee import ModelView
@@ -8,6 +9,7 @@ DEBUG = True
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '123456789'
+CORS(app, resources={r"/post": {"origins": "http://localhost:3000"}})
 
 # Database setup
 db = peewee.SqliteDatabase('test.sqlite', check_same_thread=False)
@@ -41,7 +43,7 @@ admin.add_view(PostAdmin(Post))
 @app.route('/post', methods=['GET', 'POST'])
 def post():
     if request.method == 'GET':
-        query = Post.select()
+        query = Post.select().order_by(-Post.date)
         output = []
 
         for post in query:
