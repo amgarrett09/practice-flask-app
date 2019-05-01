@@ -65,9 +65,9 @@ export default {
   methods: {
     async handleSubmit() {
       const [inputIsValid, errors] = this.validate()
-      this.errors = errors
 
       if (!inputIsValid) {
+        this.errors = errors
         return
       }
 
