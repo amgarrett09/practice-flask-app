@@ -65,6 +65,15 @@ def post():
             body = json['body']
             author = json['author']
 
+            # Post title must be unique
+            existingPost = Post.get_or_none(Post.title == title)
+
+            if existingPost != None:
+                return jsonify({
+                    "statusCode": 409,
+                    "message": "A post with that title already exists."
+                }), 409
+
             Post.create(title=title, body=body, author=author)
 
             return jsonify({

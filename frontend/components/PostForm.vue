@@ -85,7 +85,13 @@ export default {
           this.$router.push('/')
         }
       } catch (err) {
-        this.errors = ['There was a network error. Please try again.']
+        if (err.message === 'Request failed with status code 409') {
+          this.errors = [
+            'There is already a post with that title. Title must be unique.'
+          ]
+        } else {
+          this.errors = ['There was a network error. Please try again.']
+        }
       }
     },
     // Returns a pair of a boolean and an array of errors
