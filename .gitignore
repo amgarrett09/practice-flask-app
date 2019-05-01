@@ -85,3 +85,6 @@ sw.*
 
 # Database
 *.sqlite
+
+# pycache
+api/app/__pycache__
