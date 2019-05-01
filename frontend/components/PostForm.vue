@@ -5,7 +5,6 @@
         <p>Error</p>
       </div>
       <div class="content message-body">
-        <p>The following errors must be corrected:</p>
         <ul>
           <li v-for="error in errors" :key="error">{{ error }}</li>
         </ul>
@@ -82,10 +81,12 @@ export default {
           body: this.body
         })
 
-        if (!data.statusCode) {
+        if (data.statusCode === 201) {
           this.$router.push('/')
         }
-      } catch (err) {}
+      } catch (err) {
+        this.errors = ['There was a network error. Please try again.']
+      }
     },
     // Returns a pair of a boolean and an array of errors
     isValid() {
