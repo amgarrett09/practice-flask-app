@@ -64,13 +64,10 @@ export default {
   },
   methods: {
     async handleSubmit() {
-      /* Reset the errors when the user submits */
-      this.errors = []
-
       const [inputIsValid, errors] = this.isValid()
+      this.errors = errors
 
       if (!inputIsValid) {
-        this.errors = errors
         return
       }
 
