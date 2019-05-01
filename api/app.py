@@ -68,15 +68,19 @@ def post():
             Post.create(title=title, body=body, author=author)
 
             return jsonify({
-                "status": 201,
+                "statusCode": 201,
                 "message": "Success! Post created."
             }), 201
 
         except:
+            message = (
+                "Invalid request. Request must be valid JSON and must contain"
+                "the required fields"
+            )
+
             return jsonify({
-                "status": 400,
-                "message": "Invalid request. Request must be valid JSON and \
-                        must have the required fields."
+                "statusCode": 400,
+                "message": message
             }), 400
 
 
