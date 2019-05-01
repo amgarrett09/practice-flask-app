@@ -64,7 +64,7 @@ export default {
   },
   methods: {
     async handleSubmit() {
-      const [inputIsValid, errors] = this.isValid()
+      const [inputIsValid, errors] = this.validate()
       this.errors = errors
 
       if (!inputIsValid) {
@@ -92,7 +92,7 @@ export default {
       }
     },
     // Returns a pair of a boolean and an array of errors
-    isValid() {
+    validate() {
       let validated = true
       const errors = []
 
