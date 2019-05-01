@@ -68,7 +68,10 @@ export default {
       /* Reset the errors when the user submits */
       this.errors = []
 
-      if (!this.isValid()) {
+      const [inputIsValid, errors] = this.isValid()
+
+      if (!inputIsValid) {
+        this.errors = errors
         return
       }
 
@@ -84,26 +87,27 @@ export default {
         }
       } catch (err) {}
     },
+    // Returns a pair of a boolean and an array of errors
     isValid() {
       let validated = true
+      const errors = []
 
-      /* Push error messages if fields aren't valid, so they can be displayed to the user */
       if (this.title.length <= 0) {
-        this.errors.push('Title is required')
+        errors.push('Title is required')
         validated = false
       }
 
       if (this.author.length <= 0) {
-        this.errors.push('Author is required')
+        errors.push('Author is required')
         validated = false
       }
 
       if (this.body.length <= 0) {
-        this.errors.push('Body is required')
+        errors.push('Body is required')
         validated = false
       }
 
-      return validated
+      return [validated, errors]
     }
   }
 }
