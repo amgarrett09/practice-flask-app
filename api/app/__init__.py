@@ -7,7 +7,7 @@ from .models import Post, PostAdmin, User, UserAdmin
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '123456789'
-CORS(app, resources={r"/post": {"origins": "http://localhost:3000"}})
+CORS(app, resources={r'/post': {'origins': 'http://localhost:3000'}})
 
 # Admin setup
 app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
@@ -24,15 +24,16 @@ def get_all_posts():
 
     for post in query:
         output.append({
-            "title": post.title,
-            "author": post.author,
-            "body": post.body,
-            "date": post.date
+            'title': post.title,
+            'author': post.author,
+            'body': post.body,
+            'date': post.date
         })
 
     return jsonify({
-        "posts": output
+        'posts': output
     }), 200
+
 
 @app.route('/post', methods=['POST'])
 def create_post():
@@ -46,29 +47,30 @@ def create_post():
         # Post title must be unique
         existingPost = Post.get_or_none(Post.title == title)
 
-        if existingPost != None:
+        if existingPost is not None:
             return jsonify({
-                "statusCode": 409,
-                "message": "A post with that title already exists."
+                'statusCode': 409,
+                'message': 'A post with that title already exists.'
             }), 409
 
         Post.create(title=title, body=body, author=author)
 
         return jsonify({
-            "statusCode": 201,
-            "message": "Success! Post created."
+            'statusCode': 201,
+            'message': 'Success! Post created.'
         }), 201
 
     except:
         message = (
-            "Invalid request. Request must be valid JSON and must contain"
-            "the required fields"
+            'Invalid request. Request must be valid JSON and must contain'
+            'the required fields'
         )
 
         return jsonify({
-            "statusCode": 400,
-            "message": message
+            'statusCode': 400,
+            'message': message
         }), 400
+
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -100,8 +102,8 @@ def register():
 
     except:
         message = (
-            "Invalid request. Request must be valid JSON and must contain"
-            "the required fields"
+            'Invalid request. Request must be valid JSON and must contain'
+            'the required fields'
         )
 
         return jsonify({
