@@ -1,12 +1,10 @@
-from app import app, Post
+from app import app, Post, User
 
 DEBUG = True
 
 if __name__ == '__main__':
-    try:
-        Post.create_table()
-    except:
-        pass
+    Post.create_table(fail_silently=True)
+    User.create_table(fail_silently=True)
 
     app.run(debug=DEBUG)
 

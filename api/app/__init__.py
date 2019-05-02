@@ -1,8 +1,9 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_admin import Admin
+from passlib.hash import bcrypt
 
-from .models import Post, PostAdmin
+from .models import Post, PostAdmin, User, UserAdmin
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '123456789'
@@ -13,6 +14,7 @@ app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 
 admin = Admin(app, name='blog', template_mode='bootstrap3')
 admin.add_view(PostAdmin(Post))
+admin.add_view(UserAdmin(User))
 
 # Routes
 @app.route('/post', methods=['GET', 'POST'])
@@ -66,3 +68,48 @@ def post():
                 "statusCode": 400,
                 "message": message
             }), 400
+
+@app.route('/register', methods=['POST'])
+def register():
+    if not request.method == 'POST':
+        return jsonify({
+            'statusCode': 400,
+            'message': 'This route only accepts POST requests'
+        }), 400
+
+    try:
+        json = request.get_json()
+
+        username = json['username']
+        password = json['password']
+        email = json['email']
+
+        if len(password) < 12:
+            return jsonify({
+                'statusCode': 400,
+                'message': 'Password must be at least 12 characters'
+            }), 400
+
+        password_hash = bcrypt.hash(password)
+
+        User.create(
+            username=username,
+            password_hash=password_hash,
+            email=email
+        )
+
+        return jsonify({
+            'statusCode': 201,
+            'message': 'Success! New user registered.'
+        })
+
+    except:
+        message = (
+            "Invalid request. Request must be valid JSON and must contain"
+            "the required fields"
+        )
+
+        return jsonify({
+            'statusCode': 400,
+            'message': message
+        })
