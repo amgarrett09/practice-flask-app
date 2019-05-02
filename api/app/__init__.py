@@ -17,66 +17,61 @@ admin.add_view(PostAdmin(Post))
 admin.add_view(UserAdmin(User))
 
 # Routes
-@app.route('/post', methods=['GET', 'POST'])
-def post():
-    if request.method == 'GET':
-        query = Post.select().order_by(-Post.date)
-        output = []
+@app.route('/post', methods=['GET'])
+def get_all_posts():
+    query = Post.select().order_by(-Post.date)
+    output = []
 
-        for post in query:
-            output.append({
-                "title": post.title,
-                "author": post.author,
-                "body": post.body,
-                "date": post.date
-            })
+    for post in query:
+        output.append({
+            "title": post.title,
+            "author": post.author,
+            "body": post.body,
+            "date": post.date
+        })
+
+    return jsonify({
+        "posts": output
+    }), 200
+
+@app.route('/post', methods=['POST'])
+def create_post():
+    try:
+        json = request.get_json()
+
+        title = json['title']
+        body = json['body']
+        author = json['author']
+
+        # Post title must be unique
+        existingPost = Post.get_or_none(Post.title == title)
+
+        if existingPost != None:
+            return jsonify({
+                "statusCode": 409,
+                "message": "A post with that title already exists."
+            }), 409
+
+        Post.create(title=title, body=body, author=author)
 
         return jsonify({
-            "posts": output
-        }), 200
-    else:
-        try:
-            json = request.get_json()
+            "statusCode": 201,
+            "message": "Success! Post created."
+        }), 201
 
-            title = json['title']
-            body = json['body']
-            author = json['author']
+    except:
+        message = (
+            "Invalid request. Request must be valid JSON and must contain"
+            "the required fields"
+        )
 
-            # Post title must be unique
-            existingPost = Post.get_or_none(Post.title == title)
-
-            if existingPost != None:
-                return jsonify({
-                    "statusCode": 409,
-                    "message": "A post with that title already exists."
-                }), 409
-
-            Post.create(title=title, body=body, author=author)
-
-            return jsonify({
-                "statusCode": 201,
-                "message": "Success! Post created."
-            }), 201
-
-        except:
-            message = (
-                "Invalid request. Request must be valid JSON and must contain"
-                "the required fields"
-            )
-
-            return jsonify({
-                "statusCode": 400,
-                "message": message
-            }), 400
+        return jsonify({
+            "statusCode": 400,
+            "message": message
+        }), 400
 
 @app.route('/register', methods=['POST'])
 def register():
-    if not request.method == 'POST':
-        return jsonify({
-            'statusCode': 400,
-            'message': 'This route only accepts POST requests'
-        }), 400
-
     try:
         json = request.get_json()
 

@@ -14,7 +14,7 @@ class Post(BaseModel):
     title = peewee.CharField()
     author = peewee.CharField()
     body = peewee.TextField()
-    date = peewee.DateTimeField(default=datetime.datetime.now())
+    date = peewee.DateTimeField(default=datetime.datetime.now)
 
     def __unicode__(self):
         return self.title
@@ -27,7 +27,7 @@ class User(BaseModel):
     username = peewee.CharField(unique=True)
     password_hash = peewee.CharField()
     email = peewee.CharField()
-    join_date = peewee.DateTimeField(default=datetime.datetime.now())
+    join_date = peewee.DateTimeField(default=datetime.datetime.now)
     is_admin = peewee.BooleanField(default=False)
 
 class UserAdmin(ModelView):
