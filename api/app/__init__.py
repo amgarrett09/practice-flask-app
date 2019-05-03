@@ -110,3 +110,35 @@ def register():
             'statusCode': 400,
             'message': message
         })
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    try:
+        json = request.get_json()
+
+        username = json['username']
+        password = json['password']
+
+        user = User.get_or_none(User.username == username)
+
+        # If user exists, verify password. If no user, default to False
+        authenticated = bcrypt.verify(password, user.password_hash) \
+            if user is not None else False
+
+        if authenticated:
+            return jsonify({
+                'statusCode': 200,
+                'message': 'Success! User is now logged in.'
+            })
+        else:
+            return jsonify({
+                'statusCode': 401,
+                'message': 'Invalid username or password'
+            })
+
+    except:
+        return jsonify({
+            'statusCode': 400,
+            'message': 'Bad request'
+        })
