@@ -135,7 +135,7 @@ def register():
         return jsonify({
             'statusCode': 201,
             'message': 'Success! New user registered.'
-        })
+        }), 201
 
     except:
         message = (
@@ -146,7 +146,7 @@ def register():
         return jsonify({
             'statusCode': 400,
             'message': message
-        })
+        }), 400
 
 
 @app.route('/api/login', methods=['POST'])
@@ -179,10 +179,10 @@ def login():
             return jsonify({
                 'statusCode': 401,
                 'message': 'Invalid username or password'
-            })
+            }), 401
 
     except:
         return jsonify({
             'statusCode': 400,
             'message': 'Bad request'
-        })
+        }), 400
