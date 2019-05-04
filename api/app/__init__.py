@@ -2,12 +2,15 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_admin import Admin
 from passlib.hash import bcrypt
+from functools import wraps
+import jwt
+import datetime
 
 from .models import Post, PostAdmin, User, UserAdmin
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '123456789'
-CORS(app, resources={r'/post': {'origins': 'http://localhost:3000'}})
+CORS(app, resources={r'/api/*': {'origins': 'http://localhost:3000'}})
 
 # Admin setup
 app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
@@ -16,8 +19,35 @@ admin = Admin(app, name='blog', template_mode='bootstrap3')
 admin.add_view(PostAdmin(Post))
 admin.add_view(UserAdmin(User))
 
+
+# JWT decorator
+def auth_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+
+        if 'x-access-token' in request.headers:
+            token = request.headers['x-access-token']
+        else:
+            return jsonify({
+                'statusCode': 401,
+                'message': 'Authentication token is missing.'
+            }), 401
+
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'])
+            user = User.get_or_none(User.username == data['username'])
+        except:
+            return jsonify({
+                'statusCode': 401,
+                'message': 'Invalid authentication token.'
+            }), 401
+        return f(user, *args, **kwargs)
+    return decorated
+
+
 # Routes
-@app.route('/post', methods=['GET'])
+@app.route('/api/post', methods=['GET'])
 def get_all_posts():
     query = Post.select().order_by(-Post.date)
     output = []
@@ -35,14 +65,21 @@ def get_all_posts():
     }), 200
 
 
-@app.route('/post', methods=['POST'])
-def create_post():
+@app.route('/api/post', methods=['POST'])
+@auth_required
+def create_post(user):
+    if user is None:
+        return jsonify({
+            'statusCode': 401,
+            'message': 'Login required.'
+        }), 401
+
     try:
         json = request.get_json()
 
         title = json['title']
         body = json['body']
-        author = json['author']
+        author = user.username
 
         # Post title must be unique
         existingPost = Post.get_or_none(Post.title == title)
@@ -72,7 +109,7 @@ def create_post():
         }), 400
 
 
-@app.route('/register', methods=['POST'])
+@app.route('/api/register', methods=['POST'])
 def register():
     try:
         json = request.get_json()
@@ -112,7 +149,7 @@ def register():
         })
 
 
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 def login():
     try:
         json = request.get_json()
@@ -127,9 +164,16 @@ def login():
             if user is not None else False
 
         if authenticated:
+            expiration = datetime.datetime.utcnow() \
+                    + datetime.timedelta(minutes=30)
+
+            token = jwt.encode({
+                'username': username,
+                'exp': expiration
+            }, app.config['SECRET_KEY'])
+
             return jsonify({
-                'statusCode': 200,
-                'message': 'Success! User is now logged in.'
+                'token': token.decode('UTF-8')
             })
         else:
             return jsonify({
