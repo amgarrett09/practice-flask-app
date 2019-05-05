@@ -112,11 +112,21 @@ def register():
         password = json['password']
         email = json['email']
 
+        # Data validation
         if len(password) < 12:
             return jsonify({
                 'statusCode': 400,
                 'message': 'Password must be at least 12 characters'
             }), 400
+
+        user_with_name = User.get_or_none(User.username == username)
+        user_with_email = User.get_or_none(User.email == email)
+
+        if user_with_name is not None or user_with_email is not None:
+            return jsonify({
+                'statusCode': 409,
+                'message': 'User with that username or email already exists.'
+            }), 409
 
         password_hash = bcrypt.hash(password)
 
@@ -130,7 +140,6 @@ def register():
             'statusCode': 201,
             'message': 'Success! New user registered.'
         }), 201
-
     except:
         message = (
             'Invalid request. Request must be valid JSON and must contain'
@@ -141,7 +150,6 @@ def register():
             'statusCode': 400,
             'message': message
         }), 400
-
 
 @app.route('/api/login', methods=['POST'])
 def login():

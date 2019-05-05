@@ -6,6 +6,14 @@
         <post-form :submit="submit" />
       </div>
     </section>
+    <section v-if="!authenticated" class="section">
+      <div class="container is-fluid">
+        <h1 class="title is-1">
+          This page requires a login
+        </h1>
+        <p><nuxt-link to="/login">Login now</nuxt-link></p>
+      </div>
+    </section>
   </main>
 </template>
 

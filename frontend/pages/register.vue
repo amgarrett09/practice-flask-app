@@ -1,9 +1,9 @@
 <template>
   <main>
     <section class="section">
+      <error-card v-show="errors.length > 0" :errors="errors" />
       <div class="container is-fluid">
-        <error-card v-show="errors.length > 0" :errors="errors" />
-        <login-form @error="onError" @submit="onSubmit" />
+        <login-form :registration="true" @error="onError" @submit="onSubmit" />
       </div>
     </section>
   </main>
@@ -23,13 +23,16 @@ export default {
     }
   },
   methods: {
-    async onSubmit(payload) {
+    async onSubmit(data) {
       try {
-        const { data } = await this.$axios.post('/login', payload)
-        this.$store.dispatch('auth/login', data)
-        this.$router.push('/')
+        await this.$axios.post('/register', data)
+        this.$router.push('/login')
       } catch (err) {
-        this.errors = [err.message]
+        if (err.message === 'Request failed with status code 409') {
+          this.errors = ['A user with that username or email already exists']
+        } else {
+          this.errors = ['There was a network problem. Try again.']
+        }
       }
     },
     onError(errors) {
