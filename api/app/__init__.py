@@ -29,19 +29,13 @@ def auth_required(f):
         if 'x-access-token' in request.headers:
             token = request.headers['x-access-token']
         else:
-            return jsonify({
-                'statusCode': 401,
-                'message': 'Authentication token is missing.'
-            }), 401
+            return f(None, *args, **kwargs)
 
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'])
             user = User.get_or_none(User.username == data['username'])
         except:
-            return jsonify({
-                'statusCode': 401,
-                'message': 'Invalid authentication token.'
-            }), 401
+            return f(None, *args, **kwargs)
         return f(user, *args, **kwargs)
     return decorated
 
@@ -173,6 +167,7 @@ def login():
             }, app.config['SECRET_KEY'])
 
             return jsonify({
+                'username': username,
                 'token': token.decode('UTF-8')
             })
         else:
