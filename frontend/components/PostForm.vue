@@ -72,6 +72,7 @@ export default {
       }
 
       try {
+        // Pass data to the submit function that as provided in props
         const { data } = await this.submit({
           title: this.title,
           author: this.author,
