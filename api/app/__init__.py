@@ -181,3 +181,29 @@ def login():
             'statusCode': 400,
             'message': 'Bad request'
         }), 400
+
+
+@app.route('/api/check-auth', methods=['POST'])
+def check_auth():
+    try:
+        json = request.get_json()
+        token = json['token']
+
+        authenticated = jwt.decode(token, app.config['SECRET_KEY'])
+
+        if authenticated:
+            return jsonify({
+                'statusCode': 200,
+                'message': 'User is authenticated.'
+            }), 200
+        else:
+            return jsonify({
+                'statusCode': 401,
+                'message': 'Login required'
+            }), 401
+
+    except:
+        return jsonify({
+            'statusCode': 400,
+            'message': 'Bad request'
+        })

@@ -15,6 +15,6 @@ export const mutations = {
 export const actions = {
   login({ commit }, payload) {
     commit('SET_TOKEN', payload.token)
-    commit('SET_USER', payload.user)
+    commit('SET_USER', payload.username)
   }
 }

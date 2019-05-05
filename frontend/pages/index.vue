@@ -1,9 +1,7 @@
 <template>
   <div>
     <header>
-      <nav>
-        <nuxt-link to="/create-post">Create a post</nuxt-link>
-      </nav>
+      <nav-bar />
     </header>
     <main>
       <section class="section">
@@ -24,9 +22,11 @@
 
 <script>
 import PostPreview from '../components/PostPreview.vue'
+import NavBar from '../components/NavBar.vue'
 export default {
   components: {
-    PostPreview
+    PostPreview,
+    NavBar
   },
   async asyncData({ $axios, error }) {
     try {

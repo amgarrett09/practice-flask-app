@@ -20,14 +20,6 @@
         </label>
       </div>
       <div class="field">
-        <label for="author" class="label">
-          Author
-          <div class="control">
-            <input id="author" v-model="author" type="text" class="input" />
-          </div>
-        </label>
-      </div>
-      <div class="field">
         <label for="body" class="label">
           Body
           <div class="control">
@@ -57,7 +49,6 @@ export default {
   data() {
     return {
       title: '',
-      author: '',
       body: '',
       errors: []
     }
@@ -72,10 +63,9 @@ export default {
       }
 
       try {
-        // Pass data to the submit function that as provided in props
+        // Pass data to the submit function that is provided in props
         const { data } = await this.submit({
           title: this.title,
-          author: this.author,
           body: this.body
         })
 
@@ -87,6 +77,8 @@ export default {
           this.errors = [
             'There is already a post with that title. Title must be unique.'
           ]
+        } else if (err.message === 'Request failed with status code 401') {
+          this.$router.push('/login')
         } else {
           this.errors = ['There was a network error. Please try again.']
         }
@@ -99,11 +91,6 @@ export default {
 
       if (this.title.length <= 0) {
         errors.push('Title is required')
-        validated = false
-      }
-
-      if (this.author.length <= 0) {
-        errors.push('Author is required')
         validated = false
       }
 
