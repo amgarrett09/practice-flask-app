@@ -1,51 +1,33 @@
 <template>
-  <div>
-    <article v-show="errors.length > 0" class="message is-danger">
-      <div class="message-header">
-        <p>Error</p>
-      </div>
-      <div class="content message-body">
-        <ul>
-          <li v-for="error in errors" :key="error">{{ error }}</li>
-        </ul>
-      </div>
-    </article>
-    <form action="/">
-      <div class="field">
-        <label for="title" class="label">
-          Title
-          <div class="control">
-            <input id="title" v-model="title" type="text" class="input" />
-          </div>
-        </label>
-      </div>
-      <div class="field">
-        <label for="body" class="label">
-          Body
-          <div class="control">
-            <textarea id="body" v-model="body" class="textarea" />
-          </div>
-        </label>
-      </div>
-      <div class="field">
+  <form action="/">
+    <div class="field">
+      <label for="title" class="label">
+        Title
         <div class="control">
-          <button class="button is-link" @click.prevent="handleSubmit">
-            Submit
-          </button>
+          <input id="title" v-model="title" type="text" class="input" />
         </div>
+      </label>
+    </div>
+    <div class="field">
+      <label for="body" class="label">
+        Body
+        <div class="control">
+          <textarea id="body" v-model="body" class="textarea" />
+        </div>
+      </label>
+    </div>
+    <div class="field">
+      <div class="control">
+        <button class="button is-link" @click.prevent="handleSubmit">
+          Submit
+        </button>
       </div>
-    </form>
-  </div>
+    </div>
+  </form>
 </template>
 
 <script>
 export default {
-  props: {
-    submit: {
-      type: Function,
-      required: true
-    }
-  },
   data() {
     return {
       title: '',
@@ -54,35 +36,22 @@ export default {
     }
   },
   methods: {
-    async handleSubmit() {
+    handleSubmit() {
       const [inputIsValid, errors] = this.validate()
 
       if (!inputIsValid) {
         this.errors = errors
+        this.$emit('error', this.errors)
         return
       }
 
-      try {
-        // Pass data to the submit function that is provided in props
-        const { data } = await this.submit({
-          title: this.title,
-          body: this.body
-        })
-
-        if (data.statusCode === 201) {
-          this.$router.push('/')
-        }
-      } catch (err) {
-        if (err.message === 'Request failed with status code 409') {
-          this.errors = [
-            'There is already a post with that title. Title must be unique.'
-          ]
-        } else if (err.message === 'Request failed with status code 401') {
-          this.$router.push('/login')
-        } else {
-          this.errors = ['There was a network error. Please try again.']
-        }
+      const data = {
+        title: this.title,
+        body: this.body,
+        author: this.$store.state.auth.loggedInUser
       }
+
+      this.$emit('submit', data)
     },
     // Returns a pair of a boolean and an array of errors
     validate() {

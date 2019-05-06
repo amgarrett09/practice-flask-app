@@ -1,9 +1,10 @@
 <template>
   <main>
     <section v-if="authenticated" class="section">
-      <div class="contain is-fluid">
+      <div class="container is-fluid">
         <h1 class="title is-1">Create a post</h1>
-        <post-form :submit="submit" />
+        <error-card v-show="errors.length > 0" :errors="errors" />
+        <post-form :submit="submit" @submit="onSubmit" @error="onError" />
       </div>
     </section>
     <section v-if="!authenticated" class="section">
@@ -19,9 +20,16 @@
 
 <script>
 import PostForm from '../components/PostForm.vue'
+import ErrorCard from '../components/ErrorCard.vue'
 export default {
   components: {
-    PostForm
+    PostForm,
+    ErrorCard
+  },
+  data() {
+    return {
+      errors: []
+    }
   },
   async asyncData({ store, $axios }) {
     // Make sure user is authenticated before displaying anything
@@ -53,12 +61,27 @@ export default {
     }
   },
   methods: {
-    submit: function(payload) {
-      return this.$axios.post('/post', payload, {
-        headers: {
-          'x-access-token': this.$store.state.auth.authToken
+    async onSubmit(payload) {
+      try {
+        await this.$axios.post('/post', payload, {
+          headers: {
+            'x-access-token': this.$store.state.auth.authToken
+          }
+        })
+
+        this.$router.push('/')
+      } catch (err) {
+        if (err.message.includes('409')) {
+          this.errors = ['A post with that title already exists']
+        } else if (err.message.includes('401')) {
+          this.errors = ['Login required']
+        } else {
+          this.errors = ['There was a network error. Try again.']
         }
-      })
+      }
+    },
+    onError(errors) {
+      this.errors = errors
     }
   }
 }
