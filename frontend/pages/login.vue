@@ -29,7 +29,7 @@ export default {
         this.$store.dispatch('auth/login', data)
         this.$router.push('/')
       } catch (err) {
-        this.errors = [err.message]
+        this.errors = ['There was a network error. Try again.']
       }
     },
     onError(errors) {
