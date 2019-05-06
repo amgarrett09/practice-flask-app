@@ -151,6 +151,7 @@ def register():
             'message': message
         }), 400
 
+
 @app.route('/api/login', methods=['POST'])
 def login():
     try:
@@ -197,12 +198,12 @@ def check_auth():
         json = request.get_json()
         token = json['token']
 
-        authenticated = jwt.decode(token, app.config['SECRET_KEY'])
+        auth_data = jwt.decode(token, app.config['SECRET_KEY'])
+        user = User.get_or_none(User.username == auth_data['username'])
 
-        if authenticated:
+        if user is not None:
             return jsonify({
-                'statusCode': 200,
-                'message': 'User is authenticated.'
+                'username': user.username
             }), 200
         else:
             return jsonify({
@@ -210,8 +211,20 @@ def check_auth():
                 'message': 'Login required'
             }), 401
 
+    except jwt.ExpiredSignatureError:
+        return jsonify({
+            'statusCode': 401,
+            'message': 'Token expired. Login required.'
+        }), 401
+
+    except jwt.InvalidTokenError:
+        return jsonify({
+            'statusCode': 401,
+            'message': 'Invalid token. Login required.'
+        }), 401
+
     except:
         return jsonify({
             'statusCode': 400,
             'message': 'Bad request'
-        })
+        }), 400
