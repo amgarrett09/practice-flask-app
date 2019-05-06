@@ -4,7 +4,7 @@
       <div class="container is-fluid">
         <h1 class="title is-1">Create a post</h1>
         <error-card v-show="errors.length > 0" :errors="errors" />
-        <post-form :submit="submit" @submit="onSubmit" @error="onError" />
+        <post-form @submit="onSubmit" @error="onError" />
       </div>
     </section>
     <section v-if="!authenticated" class="section">
