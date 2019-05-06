@@ -28,7 +28,7 @@ export default {
         await this.$axios.post('/register', data)
         this.$router.push('/login')
       } catch (err) {
-        if (err.message === 'Request failed with status code 409') {
+        if (err.message.includes('409')) {
           this.errors = ['A user with that username or email already exists']
         } else {
           this.errors = ['There was a network problem. Try again.']

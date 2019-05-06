@@ -29,7 +29,11 @@ export default {
         this.$store.dispatch('auth/login', data)
         this.$router.push('/')
       } catch (err) {
-        this.errors = ['There was a network error. Try again.']
+        if (err.message.includes('401')) {
+          this.errors = ['Invalid username or password']
+        } else {
+          this.errors = ['There was a network error. Try again']
+        }
       }
     },
     onError(errors) {
