@@ -33,13 +33,14 @@ export default {
       const { data } = await $axios.get('/post')
 
       return {
-        posts: data.posts
+        posts: data.posts,
+        errors: []
       }
     } catch (err) {
-      error({
-        statusCode: 503,
-        message: err.message
-      })
+      return {
+        posts: [],
+        errors: ['There was a problem fetching posts. Try again.']
+      }
     }
   }
 }
