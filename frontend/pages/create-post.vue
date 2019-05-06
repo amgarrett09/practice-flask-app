@@ -33,7 +33,13 @@ export default {
     }
 
     try {
-      await $axios.post('/check-auth', {
+      const { data } = await $axios.post('/check-auth', {
+        token: token
+      })
+
+      // Refresh username with the data we get back from the api
+      store.dispatch('auth/login', {
+        username: data.username,
         token: token
       })
 
